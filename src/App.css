@@ -47,8 +47,7 @@
 .not-match {
   font-size: 30px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #000000;
-  background-color: #f16060;
+  color: #f16060;
 }
 
 .char {
@@ -57,6 +56,6 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.a {
-  border-left: 1px solid black;
+.current {
+  border-left: 2px solid black;
 }
