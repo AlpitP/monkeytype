@@ -1,15 +1,13 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
 
-const Result = () => {
-  const { state } = useLocation();
-  const { userInput, currentTime, paragraph } = state;
-  console.log(currentTime);
-  const userInputWords = userInput.join("").split(" ");
+const Result = ({ currentTime, paragraph, userInput }) => {
+  console.log(userInput);
+  const userInputWords = userInput.split(" ");
+  const input = userInput.split("");
   const totalWords = paragraph.split(" ");
   const totalCharacters = paragraph.split("");
 
-  const correctChars = userInput.filter(
+  const correctChars = input.filter(
     (char, index) => totalCharacters[index] === char
   );
 
@@ -17,7 +15,7 @@ const Result = () => {
     (word, index) => totalWords[index] === word
   );
 
-  const incorrectChars = userInput.filter(
+  const incorrectChars = input.filter(
     (char, index) => totalCharacters[index] !== char
   );
 
@@ -26,8 +24,7 @@ const Result = () => {
   const accuracy = Math.floor(
     (correctWords.length * 100) / userInputWords.length
   );
-  console.log(correctWords);
-  console.log(userInputWords);
+
   return (
     <div className="App">
       <h1>Result</h1>

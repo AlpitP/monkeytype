@@ -1,20 +1,26 @@
 import React from "react";
 
-const WordsButtons = ({ setTotalWords, setCurrentTime, changePara }) => {
-  const onClick = (e, value) => {
-    setTotalWords(value);
+const WordsButtons = ({
+  setTotalWords,
+  setCurrentTime,
+  setSelectedTime,
+  changePara,
+}) => {
+  const onClick = (e) => {
+    setTotalWords(+e.target.innerText);
     setCurrentTime(0);
+    setSelectedTime();
     changePara();
     e.target.blur();
   };
   return (
     <div style={{ margin: 10 }}>
       <span>Words :- </span>
-      <button onClick={(e) => onClick(e, 10)}>10</button>
-      <button onClick={(e) => onClick(e, 20)} style={{ margin: 20 }}>
+      <button onClick={onClick}>10</button>
+      <button onClick={onClick} style={{ margin: 20 }}>
         20
       </button>
-      <button onClick={(e) => onClick(e, 30)}>30</button>
+      <button onClick={onClick}>30</button>
     </div>
   );
 };
