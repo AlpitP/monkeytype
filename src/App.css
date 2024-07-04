@@ -40,22 +40,39 @@
 
 .match {
   color: black;
-  font-size: 30px;
+  font-size: 27px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  border: none;
+  width: 21px;
+  text-align: center;
 }
 
 .not-match {
-  font-size: 30px;
+  font-size: 27px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #f16060;
+  border: none;
+  width: 21px;
+  text-align: center;
 }
 
 .char {
   color: #9c9b9b;
-  font-size: 30px;
+  font-size: 27px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  border: none;
+  width: 21px;
+  text-align: center;
 }
 
 .current {
   border-left: 2px solid black;
+}
+
+input:focus {
+  outline-width: 0;
+}
+
+button {
+  margin: 10px;
 }
