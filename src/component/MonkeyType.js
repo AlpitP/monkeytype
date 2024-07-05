@@ -1,6 +1,7 @@
 import { generate as generateParagraph } from "random-words";
 import { useEffect, useRef, useState } from "react";
 import Result from "./Result";
+import { selectTimeButtons, selectWordButtons } from "../description";
 
 const MonkeyType = () => {
   const [userInput, setUserInput] = useState("");
@@ -10,20 +11,20 @@ const MonkeyType = () => {
   );
   const [selectedTime, setSelectedTime] = useState();
   const paragraphReference = useRef(null);
-  const [startTime, setStartTime] = useState();
-  const [endTime, setEndTime] = useState();
-  const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const [remainingTime, setRemainingTime] = useState();
+  const [time, setTime] = useState(1);
   const [isGameStart, setIsGameStart] = useState(false);
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const changeParagraph = (words) => {
     const paragraph = generateParagraph(words ?? selectedWords).join(" ");
     setParagraph(paragraph);
     setUserInput("");
-    setRemainingTime(selectedTime);
+    setTime(1);
     setIsGameStart(false);
   };
-  const clickHandler = (words, time) => {
+
+  const changeModeHandler = (words, time) => {
     setSelectedWords(words);
     setSelectedTime(time);
     changeParagraph(words);
@@ -31,92 +32,121 @@ const MonkeyType = () => {
 
   const keyPressHandler = (e) => {
     const add =
-      userInput.split(" ")[currentWordIndex - 1].length <
-      paragraph.split(" ")[currentWordIndex - 1].length;
+      userInput.split(" ")[currentWordIndex]?.length <
+      paragraph.split(" ")[currentWordIndex]?.length;
 
-    if (!userInput) {
+    if (!isGameStart) {
       setIsGameStart(true);
     }
 
-    if (e.code === "Backspace") {
+    if (selectedTime && userInput.length > paragraph.length - 30) {
+      setParagraph((prev) => prev + generateParagraph(5).join(" "));
+    }
+
+    if (e.code === "Backspace" && e.altKey) {
+      const words = userInput.trim().split(" ");
+      words.pop();
+      setUserInput(words.join(" ") + (words.length > 0 ? " " : ""));
+    } else if (e.code === "Backspace") {
       setUserInput((prev) => prev.slice(0, prev.length - 1));
-    } else if (
-      ((!userInput || add) && e.code !== "Space" && e.key !== "Meta") ||
-      (!add && e.code === "Space")
-    ) {
+    } else if (e.code === "Space") {
+      if (!add) {
+        setUserInput((pre) => pre + e.key);
+      }
+    } else if (add && e.key.length === 1) {
       setUserInput((pre) => pre + e.key);
+      setCurrentIndex((prev) => prev + 1);
     }
   };
 
   useEffect(() => {
     if (isGameStart) {
-      const time = setInterval(() => {
-        if (remainingTime > 0) {
-          setRemainingTime((prev) => prev - 1);
-        }
+      setTime(1);
+      const interval = setInterval(() => {
+        setTime((prev) => {
+          if (prev < selectedTime) {
+            return prev + 1;
+          } else {
+            clearInterval(interval);
+            return prev;
+          }
+        });
       }, 1000);
-      return () => clearInterval(time);
-    }
-  }, [startTime, remainingTime]);
-
-  useEffect(() => {
-    if (isGameStart) {
-      setStartTime(Date.now());
-      setRemainingTime(selectedTime);
     }
   }, [isGameStart]);
 
   useEffect(() => {
-    setCurrentWordIndex(userInput.split(" ").length);
-    if (userInput.length === paragraph.length || remainingTime === 0) {
-      setEndTime(Date.now());
-    }
-    if (selectedTime) {
-      if (userInput.length > paragraph.length - 30) {
-        setParagraph((prev) => prev + generateParagraph(5).join(" "));
+    setCurrentWordIndex(userInput.split(" ").length - 1);
+    // const a = document.querySelector(".active");
+    // a.childNodes?.forEach((ele, index) => {
+    //   if (userInput?.split(" ")[currentWordIndex]?.length === index) {
+    //     ele.classList.add("current");
+    //     ele.focus();
+    //   } else {
+    //     ele.classList.remove("current");
+    //   }
+
+    //   if (
+    //     userInput?.split(" ")[currentWordIndex]?.[index] ===
+    //     paragraph?.split(" ")[currentWordIndex]?.[index]
+    //   ) {
+    //     ele.classList.add("match");
+    //   } else if (
+    //     userInput?.split(" ")[currentWordIndex]?.[index] !==
+    //     paragraph?.split(" ")[currentWordIndex]?.[index]
+    //   ) {
+    //     ele.classList.remove("match");
+    //   }
+    // });
+
+    const characters = paragraphReference.current?.querySelectorAll(".char");
+    characters?.forEach((char, index) => {
+      if (index === 0) {
+        char.classList.add("current");
+        char.focus();
+      } else {
+        char.classList.remove("current");
       }
-    }
+    });
+  }, [userInput, paragraph, currentWordIndex]);
 
-    const characters =
-      paragraphReference.current &&
-      paragraphReference.current.querySelectorAll(".char");
-    characters &&
-      characters.forEach((char, index) => {
-        if (index === 0) {
-          char.classList.add("current");
-          char.focus();
-        } else {
-          char.classList.remove("current");
-        }
-      });
-  }, [userInput, paragraph, remainingTime]);
-
-  if (paragraph.length === userInput.length || remainingTime === 0) {
+  if (paragraph.length === userInput.length || time === selectedTime) {
     return (
       <Result
         userInput={userInput ?? ""}
-        totalTime={endTime - startTime}
+        totalTime={time}
         paragraph={paragraph}
         changeParagraph={changeParagraph}
       />
     );
-  } else {
-    return (
+  }
+  return (
+    <>
       <div className="App">
         <h1>Typing Speed</h1>
         <div style={{ margin: 10 }}>
           <span>Words :- </span>
-          <button onClick={() => clickHandler(15)}>15</button>
-          <button onClick={() => clickHandler(25)}>25</button>
-          <button onClick={() => clickHandler(50)}>50</button>
-          <button onClick={() => clickHandler(100)}>100</button>
+          {selectWordButtons.map((button, index) => (
+            <button
+              key={index}
+              className={selectedWords === button.value ? "selected" : ""}
+              onClick={() => changeModeHandler(button.value)}
+            >
+              {button.value}
+            </button>
+          ))}
         </div>
         <div style={{ margin: 10 }}>
           <span>Time :- </span>
-          <button onClick={() => clickHandler(35, 15)}>15</button>
-          <button onClick={() => clickHandler(35, 30)}>30</button>
-          <button onClick={() => clickHandler(35, 60)}>60</button>
-          <button onClick={() => clickHandler(35, 120)}>120</button>
+          {selectTimeButtons.map((button, index) => (
+            <button
+              key={index}
+              className={selectedTime === button.value ? "selected" : ""}
+              onClick={() => changeModeHandler(35, button.value)}
+            >
+              {button.value}
+            </button>
+          ))}
         </div>
 
         <div
@@ -126,39 +156,59 @@ const MonkeyType = () => {
         >
           <h3>
             {selectedTime
-              ? `Time:-  ${!isGameStart ? selectedTime : remainingTime}`
+              ? `Time:-  ${!isGameStart ? selectedTime : time}`
               : "Words:- " + selectedWords}
           </h3>
-          <div
-            ref={paragraphReference}
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              width: "90%",
-              marginLeft: "5%",
-            }}
-          >
-            {paragraph.split("").map((char, index) => (
-              <input
-                key={index}
-                className={
-                  userInput[index] === paragraph[index]
-                    ? "match"
-                    : !userInput[index]
-                    ? "char"
-                    : "not-match"
-                }
-                value={char}
-                onKeyUp={keyPressHandler}
-                readOnly
-                autoFocus
-              />
-            ))}
+          <div className="paragraph-container">
+            <div
+              ref={paragraphReference}
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                width: "90%",
+                marginLeft: "5%",
+              }}
+            >
+              {/* {paragraph.split(" ").map((word, i) => (
+                <div key={i} className={currentWordIndex === i && "active"}>
+                  {word.split("").map((char, index) => (
+                    <input
+                      key={index}
+                      value={char}
+                      readOnly
+                      onKeyUp={keyPressHandler}
+                    />
+                  ))}
+                  <input
+                    type="text"
+                    value=" "
+                    onKeyUp={keyPressHandler}
+                    readOnly
+                  />
+                </div>
+              ))} */}
+              {paragraph.split("").map((char, index) => (
+                <input
+                  key={index}
+                  className={
+                    userInput[index] === paragraph[index]
+                      ? "match"
+                      : !userInput[index]
+                      ? "char"
+                      : "not-match"
+                  }
+                  value={char}
+                  onKeyUp={keyPressHandler}
+                  readOnly
+                />
+              ))}
+            </div>
           </div>
         </div>
         <button onClick={() => changeParagraph()}>Refresh</button>
       </div>
-    );
-  }
+    </>
+  );
 };
+
 export default MonkeyType;

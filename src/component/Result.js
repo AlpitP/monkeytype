@@ -9,15 +9,11 @@ const Result = ({ totalTime, paragraph, userInput, changeParagraph }) => {
   const correctChars = input.filter(
     (char, index) => totalCharacters[index] === char
   );
-
   const correctWords = userInputWords.filter(
     (word, index) => totalWords[index] === word
   );
-
   const incorrectChars = userInput.length - correctChars.length;
-  console.log(userInput);
-  const grossWPM = userInputWords.length / (totalTime / (60 * 1000));
-  console.log(grossWPM);
+  const grossWPM = correctWords.length / (totalTime / 60);
 
   const accuracy = Math.floor(
     (correctWords.length * 100) / userInputWords.length
