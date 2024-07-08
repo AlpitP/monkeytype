@@ -50,27 +50,14 @@ input {
   width: 1ch
 }
 
-.match,
-.not-match,
-.char {
-  color: black;
-  font-size: 27px;
-  font-weight: 500;
-  font-family: 'Courier New', Courier, monospace;
-  border: none;
-  text-align: center;
-  padding: 0;
-  margin: 0 1px;
-  width: 1ch
+.match {
+  color: black
 }
 
 .not-match {
   color: #f16060;
 }
 
-.char {
-  color: #9c9b9b;
-}
 
 
 .current {
