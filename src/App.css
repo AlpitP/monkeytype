@@ -50,6 +50,13 @@ input {
   width: 1ch
 }
 
+.char {
+  font-size: 27px;
+  font-weight: 200;
+  color: #9c9b9b;
+
+}
+
 .match {
   color: black
 }
@@ -58,14 +65,12 @@ input {
   color: #f16060;
 }
 
-
-
 .current {
   border-left: 2px solid black;
 }
 
 input:focus {
-  outline-width: 0;
+  outline: none;
 }
 
 button {
@@ -77,8 +82,8 @@ button {
 }
 
 .paragraph-container {
-  height: 210px;
-  overflow: hidden;
+  height: 365px;
+  overflow: auto;
 }
 
 .paragraph-container::-webkit-scrollbar {
