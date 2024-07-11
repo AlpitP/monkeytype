@@ -38,7 +38,10 @@
   }
 }
 
-input {
+.match,
+.not-match,
+.char,
+.current {
   color: #9c9b9b;
   font-size: 27px;
   font-weight: 500;
@@ -48,13 +51,6 @@ input {
   padding: 0;
   margin: 0 1px;
   width: 1ch
-}
-
-.char {
-  font-size: 27px;
-  font-weight: 200;
-  color: #9c9b9b;
-
 }
 
 .match {

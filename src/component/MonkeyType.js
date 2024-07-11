@@ -1,10 +1,10 @@
 import { generate as generateParagraph } from "random-words";
 import { useEffect, useRef, useState, useTransition } from "react";
+import { Helmet } from "react-helmet";
 import { selectTimeButtons, selectWordButtons } from "../description";
 import Buttons from "./Buttons";
 import Result from "./Result";
 import TypingArea from "./TypingArea";
-import { Helmet } from "react-helmet";
 
 const MonkeyType = () => {
   const [userInput, setUserInput] = useState("");
@@ -25,7 +25,7 @@ const MonkeyType = () => {
   });
   const remainingTime = useRef();
 
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   function selectTab({ words, time }) {
     startTransition(() => {
@@ -33,6 +33,7 @@ const MonkeyType = () => {
       setSelectedTime(time);
     });
   }
+  console.log(process.env.REACT_APP_ABC);
 
   const changeModeHandler = ({ words, time }) => {
     selectTab({ words, time });
@@ -59,7 +60,8 @@ const MonkeyType = () => {
   const keyPressHandler = (e) => {
     const currentUserInputWord = userInput.split(" ")[currentWordIndex];
     const currentParagraphWord = paragraph.split(" ")[currentWordIndex];
-    const checkCurrentInputLength =
+
+    const checkUserInputWordLength =
       currentUserInputWord?.length < currentParagraphWord.length;
 
     if (selectedTime && userInput.length > paragraph.length - 30) {
@@ -72,8 +74,23 @@ const MonkeyType = () => {
       setUserInput(words.join(" "));
     } else if (e.code === "Backspace") {
       setUserInput((prev) => prev.slice(0, prev.length - 1));
+
+      if (
+        currentUserInputWord[currentUserInputWord?.length - 1] ===
+        currentParagraphWord[currentUserInputWord?.length - 1]
+      ) {
+        setCharacterCount({
+          ...characterCount,
+          correct: characterCount.correct - 1,
+        });
+      } else {
+        setCharacterCount({
+          ...characterCount,
+          incorrect: characterCount.incorrect - 1,
+        });
+      }
     } else if (e.code === "Space") {
-      if (!checkCurrentInputLength) {
+      if (!checkUserInputWordLength) {
         setUserInput((pre) => pre + e.key);
 
         if (currentParagraphWord === currentUserInputWord) {
@@ -88,7 +105,7 @@ const MonkeyType = () => {
           });
         }
       }
-    } else if (checkCurrentInputLength && e.key.length === 1) {
+    } else if (checkUserInputWordLength && e.key.length === 1) {
       setUserInput((pre) => pre + e.key);
 
       if (!isStartTyping) {
@@ -170,34 +187,43 @@ const MonkeyType = () => {
       <div className="App">
         <Helmet>
           <title>Monkeytype</title>
+          <meta name="description" content="Monkey type"></meta>
         </Helmet>
         <h1>Typing Speed</h1>
 
         <Buttons
-          selectTimeButtons={selectWordButtons}
+          buttonsAttributes={selectWordButtons}
           label="Words"
           selected={selectedWords}
           changeModeHandler={changeModeHandler}
           compare="words"
         />
         <Buttons
-          selectTimeButtons={selectTimeButtons}
+          buttonsAttributes={selectTimeButtons}
           label="Time"
           selected={selectedTime}
           changeModeHandler={changeModeHandler}
           compare="time"
         />
-
-        <TypingArea
-          paragraph={paragraph}
-          keyPressHandler={keyPressHandler}
-          checkCharacter={checkCharacter}
-          selectedTime={selectedTime}
-          isStartTyping={isStartTyping}
-          time={remainingTime.current}
-          selectedWords={selectedWords}
-        />
-        <button onClick={changeParagraph}>Refresh</button>
+        <div
+          style={{
+            letterSpacing: 5,
+          }}
+        >
+          <h3>
+            {selectedTime
+              ? `Time:-  ${
+                  !isStartTyping ? selectedTime : remainingTime.current
+                }`
+              : "Words:- " + selectedWords}
+          </h3>
+          <TypingArea
+            paragraph={paragraph}
+            keyPressHandler={keyPressHandler}
+            checkCharacter={checkCharacter}
+          />
+          <button onClick={changeParagraph}>Refresh</button>
+        </div>
       </div>
     </>
   );

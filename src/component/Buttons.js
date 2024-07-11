@@ -1,7 +1,8 @@
 import React from "react";
+import { Helmet } from "react-helmet";
 
 const Buttons = ({
-  selectTimeButtons,
+  buttonsAttributes,
   label,
   selected,
   changeModeHandler,
@@ -9,8 +10,12 @@ const Buttons = ({
 }) => {
   return (
     <div style={{ margin: 10 }}>
+      <Helmet>
+        <title>Buttons</title>
+        <meta name="description" content="button" />
+      </Helmet>
       <span>{label} :- </span>
-      {selectTimeButtons.map((button, index) => (
+      {buttonsAttributes.map((button, index) => (
         <button
           key={index}
           className={selected === button[compare] ? "selected" : ""}

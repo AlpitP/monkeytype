@@ -1,52 +1,38 @@
 import React from "react";
+import { Helmet } from "react-helmet";
 
-const TypingArea = ({
-  paragraph,
-  keyPressHandler,
-  checkCharacter,
-  selectedTime,
-  isStartTyping,
-  time,
-  selectedWords,
-}) => {
+const TypingArea = ({ paragraph, keyPressHandler, checkCharacter }) => {
   return (
-    <div
-      style={{
-        letterSpacing: 5,
-      }}
-    >
-      <h3>
-        {selectedTime
-          ? `Time:-  ${!isStartTyping ? selectedTime : time}`
-          : "Words:- " + selectedWords}
-      </h3>
-      <div className="paragraph-container">
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            width: "90%",
-            marginLeft: "5%",
-          }}
-        >
-          {paragraph.split(" ").map((word, wordIndex) => {
-            word += " ";
-            return (
-              <div key={wordIndex}>
-                {word.split("").map((char, characterIndex) => (
-                  <input
-                    key={characterIndex}
-                    value={char}
-                    readOnly
-                    onKeyDown={keyPressHandler}
-                    className={checkCharacter({ wordIndex, characterIndex })}
-                    autoFocus
-                  />
-                ))}
-              </div>
-            );
-          })}
-        </div>
+    <div className="paragraph-container">
+      <Helmet>
+        <title>Typing area</title>
+        <meta name="description" content="typing area" />
+      </Helmet>
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          width: "90%",
+          marginLeft: "5%",
+        }}
+      >
+        {paragraph.split(" ").map((word, wordIndex) => {
+          word += " ";
+          return (
+            <div key={wordIndex}>
+              {word.split("").map((char, characterIndex) => (
+                <input
+                  key={characterIndex}
+                  value={char}
+                  readOnly
+                  onKeyDown={keyPressHandler}
+                  className={checkCharacter({ wordIndex, characterIndex })}
+                  autoFocus
+                />
+              ))}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
